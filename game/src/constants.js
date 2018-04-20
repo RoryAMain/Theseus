@@ -1,9 +1,12 @@
-const boardWidth = 5;
-const boardHeight = 5;
-const theseusStartingRow = 4;
+const boardWidth = 3;
+const boardHeight = 3;
+const theseusStartingRow = 2;
 const theseusStartingCol = 2;
 const minotaurStartingRow = 0;
-const minotaurStartingCol = 3;
+const minotaurStartingCol = 0;
+const exitRow = 1;
+const exitCol = 1;
+const exitSym = "X";
 
 export{
 	boardWidth,
@@ -11,5 +14,8 @@ export{
 	theseusStartingRow,
 	theseusStartingCol,
 	minotaurStartingRow,
-	minotaurStartingCol
+	minotaurStartingCol,
+	exitRow,
+	exitCol,
+	exitSym
 };

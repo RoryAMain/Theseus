@@ -25,6 +25,7 @@ export class TheseusBoard extends React.Component {
 			this.props.events.endTurn();
 		}
 	}
+
 	
 	
 	render() {
@@ -70,6 +71,8 @@ export class TheseusBoard extends React.Component {
 				<button key={1} onClick={()=> this.moveMinotaurButton(1)}>E</button>
 				<button key={2} onClick={()=> this.moveMinotaurButton(2)}>S</button>
 				<button key={3} onClick={()=> this.moveMinotaurButton(3)}>W</button>
+
+				{winner}
 			</div>
 		);
 		
