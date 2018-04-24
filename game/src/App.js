@@ -4,28 +4,30 @@ import { TheseusBoard } from './board';
 import {boardWidth,boardHeight,theseusStartingRow,theseusStartingCol,minotaurStartingRow,minotaurStartingCol, exitRow, exitCol,exitSym} from './constants';
 
 function isFailure(theseusRow,theseusCol,minotaurRow,minotaurCol){
-	if(theseusRow == minotaurRow && theseusCol == minotaurCol)
+	if(theseusRow === minotaurRow && theseusCol === minotaurCol)
 	{
 		return true;
 	}
 }
 
 function isVictory(theseusRow,theseusCol,exitRow,exitCol){
-	if(theseusRow == exitRow && theseusCol == exitCol){
+	if(theseusRow === exitRow && theseusCol === exitCol){
 		return true;
 	}
 }
 
 const Theseus = Game({
+	//Setup section initializes cells, and creates variables found in G
 	setup: () => (
 			{
-				cells: Array((boardWidth*boardHeight)).fill(null),
+				cells: Array(boardHeight*boardWidth).fill(null),
 				theseusRow: theseusStartingRow,
 				theseusCol: theseusStartingCol,
 				minotaurRow: minotaurStartingRow,
 				minotaurCol: minotaurStartingCol,
-				theseusPos: theseusStartingRow*boardHeight + theseusStartingCol,
-				minotaurPos: minotaurStartingRow*boardHeight + minotaurStartingCol,
+				theseusPos: theseusStartingRow*boardWidth + theseusStartingCol,
+				minotaurPos: minotaurStartingRow*boardWidth + minotaurStartingCol,
+				
 			}
 		),
 
@@ -74,33 +76,21 @@ const Theseus = Game({
 				case(0):
 					if(G.minotaurRow > 0){
 						G.minotaurRow--;
-						if(G.minotaurRow > 0){
-							G.minotaurRow--;
-						}
 					}
 					break;
 				case(1):
 					if(G.minotaurCol < boardWidth-1){
 						G.minotaurCol++;
-						if(G.minotaurCol < boardWidth-1){
-							G.minotaurCol++;
-						}
 					}
 					break;
 				case(2):
 					if(G.minotaurRow < boardHeight-1){
 						G.minotaurRow++;
-						if(G.minotaurRow < boardHeight-1){
-							G.minotaurRow++;
-						}
 					}
 					break;
 				case(3):
 					if(G.minotaurCol > 0){
 						G.minotaurCol--;
-						if(G.minotaurCol > 0){
-							G.minotaurCol--;
-						}
 					}
 					break;
 				default:
@@ -112,14 +102,27 @@ const Theseus = Game({
 			return {...G,cells};
 		},
 
+		//Sets the board up to start the game. Need to find a way to do this on start automatically.
 		startGame(G,ctx){
-			const cells = [...G,cells];
+			const cells = [...G.cells];
 			const theseusPosition = G.theseusRow * boardWidth + G.theseusCol;
 			const minotaurPosition = G.minotaurRow * boardWidth + G.minotaurCol;
 			const exitPosition = exitRow * boardWidth + exitCol;
 			cells[theseusPosition] = 0;
 			cells[minotaurPosition] = 1;
 			cells[exitPosition] = exitSym;
+			return {...G,cells};
+		},
+		
+		//Utility to display all cells ID's. Good for debugging maps.
+		showCellsId(G,ctx){
+			const cells = [...G.cells];
+			for (let i = 0; i < boardHeight; i++) {
+				for(let j=0;j<boardWidth;j++) {
+					let id = boardWidth * i + j;
+					cells[id] = id;
+				}
+			}
 			return {...G,cells};
 		}
 	},
@@ -128,10 +131,10 @@ const Theseus = Game({
 	flow: {
 		endGameIf: (G,ctx) => {
 			if(isFailure(G.theseusRow,G.theseusCol,G.minotaurRow,G.minotaurCol)){
-				return(0);
+				return("Minotaur");
 			}
 			else if(isVictory(G.theseusRow,G.theseusCol,exitRow,exitCol)){
-				return(1);
+				return("Theseus");
 			}
 		}
 	},

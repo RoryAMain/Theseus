@@ -1,11 +1,11 @@
-const boardWidth = 3;
+const boardWidth = 5;
 const boardHeight = 3;
-const theseusStartingRow = 2;
-const theseusStartingCol = 2;
-const minotaurStartingRow = 0;
-const minotaurStartingCol = 0;
-const exitRow = 1;
-const exitCol = 1;
+const theseusStartingRow = 0;
+const theseusStartingCol = 0;
+const minotaurStartingRow = 1;
+const minotaurStartingCol = 1;
+const exitRow = 2;
+const exitCol = 2;
 const exitSym = "X";
 
 export{
