@@ -18,8 +18,9 @@ function isVictory(theseusRow,theseusCol,exitRow,exitCol){
 
 const Theseus = Game({
 	//Setup section initializes cells, and creates variables found in G
-	setup: () => (
-			{
+	setup: (ctx) => {
+			
+				let G = {
 				cells: Array(boardHeight*boardWidth).fill(null),
 				theseusRow: theseusStartingRow,
 				theseusCol: theseusStartingCol,
@@ -27,9 +28,17 @@ const Theseus = Game({
 				minotaurCol: minotaurStartingCol,
 				theseusPos: theseusStartingRow*boardWidth + theseusStartingCol,
 				minotaurPos: minotaurStartingRow*boardWidth + minotaurStartingCol,
+				};
 				
-			}
-		),
+				const theseusPosition = G.theseusRow * boardWidth + G.theseusCol;
+				const minotaurPosition = G.minotaurRow * boardWidth + G.minotaurCol;
+				const exitPosition = exitRow * boardWidth + exitCol;
+				G.cells[theseusPosition] = 0;
+				G.cells[minotaurPosition] = 1;
+				G.cells[exitPosition] = exitSym;
+				
+				return G;
+		},
 
 	moves: {
 		//0:N,1:E,2:S,3:W
@@ -99,18 +108,6 @@ const Theseus = Game({
 
 			G.minotaurPos = G.minotaurRow * boardWidth + G.minotaurCol;
 			cells[G.minotaurPos] = ctx.currentPlayer;
-			return {...G,cells};
-		},
-
-		//Sets the board up to start the game. Need to find a way to do this on start automatically.
-		startGame(G,ctx){
-			const cells = [...G.cells];
-			const theseusPosition = G.theseusRow * boardWidth + G.theseusCol;
-			const minotaurPosition = G.minotaurRow * boardWidth + G.minotaurCol;
-			const exitPosition = exitRow * boardWidth + exitCol;
-			cells[theseusPosition] = 0;
-			cells[minotaurPosition] = 1;
-			cells[exitPosition] = exitSym;
 			return {...G,cells};
 		},
 		

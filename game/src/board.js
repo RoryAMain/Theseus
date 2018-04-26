@@ -62,12 +62,10 @@ export class TheseusBoard extends React.Component {
 		
 		return(
 			<div>
-				//Main board
 				<table id="board">
 					<tbody>{tbody}</tbody>
 				</table>
 				
-				//Temporary controls.
 				<h1>Theseus Controls</h1>
 				<button onClick={()=> this.moveTheseusButton(0)}>N</button>
 				<button onClick={()=> this.moveTheseusButton(1)}>E</button>
@@ -79,7 +77,6 @@ export class TheseusBoard extends React.Component {
 				<button onClick={()=> this.moveMinotaurButton(2)}>S</button>
 				<button onClick={()=> this.moveMinotaurButton(3)}>W</button>
 				
-				//Winner display.
 				{winner}
 			</div>
 		);
