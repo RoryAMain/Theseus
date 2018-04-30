@@ -1,7 +1,7 @@
 import { Client } from 'boardgame.io/react';
 import { Game } from 'boardgame.io/core';
 import { TheseusBoard } from './board';
-import {boardWidth,boardHeight,theseusStartingRow,theseusStartingCol,minotaurStartingRow,minotaurStartingCol, exitRow, exitCol,exitSym} from './constants';
+import {boardWidth,boardHeight,theseusStartingRow,theseusStartingCol,minotaurStartingRow,minotaurStartingCol, exitRow, exitCol,exitSym,walls,wallSym} from './constants';
 
 function isFailure(theseusRow,theseusCol,minotaurRow,minotaurCol){
 	if(theseusRow === minotaurRow && theseusCol === minotaurCol)
@@ -28,6 +28,7 @@ const Theseus = Game({
 				minotaurCol: minotaurStartingCol,
 				theseusPos: theseusStartingRow*boardWidth + theseusStartingCol,
 				minotaurPos: minotaurStartingRow*boardWidth + minotaurStartingCol,
+				wallSym: wallSym,
 				};
 				
 				const theseusPosition = G.theseusRow * boardWidth + G.theseusCol;
@@ -36,6 +37,13 @@ const Theseus = Game({
 				G.cells[theseusPosition] = 0;
 				G.cells[minotaurPosition] = 1;
 				G.cells[exitPosition] = exitSym;
+				
+				var wallLength = walls.length;
+				
+				for(var i = 0; i <wallLength; i++)
+				{
+					G.cells[walls[i]] = wallSym;
+				}
 				
 				return G;
 		},
