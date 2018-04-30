@@ -86,7 +86,7 @@ export class TheseusBoard extends React.Component {
 					break;
 				case(1):
 					if((this.props.G.minotaurCol + 1) < boardWidth+1){
-						if(this.props.G.cells[(this.props.G.theseusPos + 1)] !== this.props.G.wallSym){
+						if(this.props.G.cells[(this.props.G.minotaurPos + 1)] !== this.props.G.wallSym){
 							return true;
 						}
 					}
