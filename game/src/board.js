@@ -1,4 +1,5 @@
 import React from 'react';
+import Tile from './Tile';
 import {boardWidth,boardHeight} from './constants';
 
 export class TheseusBoard extends React.Component {
@@ -6,10 +7,8 @@ export class TheseusBoard extends React.Component {
 	//Launched by Theseus Controls, triggers Theseus move.
 	moveTheseusButton(id){
 		if(this.isTheseusTurn()){
-			if(this.wallCheck(id)){
-				this.props.moves.moveTheseus(id);
-				this.props.events.endTurn();
-			}
+			this.props.moves.moveTheseus(id);
+			this.props.events.endTurn();
 		}
 	}
 	
@@ -26,17 +25,13 @@ export class TheseusBoard extends React.Component {
 	//Launched by Minotaur Controls, triggers 2 Minotaur moves in the same direction.
 	moveMinotaurButton(id){
 		if(!this.isTheseusTurn()){
-			if(this.wallCheck(id)){
-				this.props.moves.moveMinotaur(id);
-			}
-			
-			if(this.wallCheck(id)){
-				this.props.moves.moveMinotaur(id);
-			}
+			this.props.moves.moveMinotaur(id);
+			this.props.moves.moveMinotaur(id);
 			this.props.events.endTurn();
 		}
 	}
 	
+	/*
 	wallCheck(id)
 	{
 		if(this.isTheseusTurn()){
@@ -110,7 +105,7 @@ export class TheseusBoard extends React.Component {
 			}
 			
 			return false;
-	}
+	}*/
 
 	
 	//Main engine for rendering the board.
@@ -141,7 +136,7 @@ export class TheseusBoard extends React.Component {
 				const id = boardWidth * i + j;
 				cells.push(
 					<td style={cellStyle} key={id}>
-						{this.props.G.cells[id]}
+						{this.props.G.cells[id].display}
 					</td>
 				);
 			}

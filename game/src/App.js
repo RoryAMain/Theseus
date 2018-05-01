@@ -1,7 +1,8 @@
 import { Client } from 'boardgame.io/react';
 import { Game } from 'boardgame.io/core';
 import { TheseusBoard } from './board';
-import {boardWidth,boardHeight,theseusStartingRow,theseusStartingCol,minotaurStartingRow,minotaurStartingCol, exitRow, exitCol,exitSym,walls,wallSym} from './constants';
+import {boardWidth,boardHeight,theseusStartingRow,theseusStartingCol,minotaurStartingRow,minotaurStartingCol, exitRow, exitCol,exitSym,theseusSym,minotaurSym} from './constants';
+import {Tile} from './Tile';
 
 function isFailure(theseusRow,theseusCol,minotaurRow,minotaurCol){
 	if(theseusRow === minotaurRow && theseusCol === minotaurCol)
@@ -28,22 +29,18 @@ const Theseus = Game({
 				minotaurCol: minotaurStartingCol,
 				theseusPos: theseusStartingRow*boardWidth + theseusStartingCol,
 				minotaurPos: minotaurStartingRow*boardWidth + minotaurStartingCol,
-				wallSym: wallSym,
 				};
+				
+				for(var j = 0; j<G.cells.length;j++){
+					G.cells[j] = new Tile(null);
+				}
 				
 				const theseusPosition = G.theseusRow * boardWidth + G.theseusCol;
 				const minotaurPosition = G.minotaurRow * boardWidth + G.minotaurCol;
 				const exitPosition = exitRow * boardWidth + exitCol;
-				G.cells[theseusPosition] = 0;
-				G.cells[minotaurPosition] = 1;
-				G.cells[exitPosition] = exitSym;
-				
-				var wallLength = walls.length;
-				
-				for(var i = 0; i <wallLength; i++)
-				{
-					G.cells[walls[i]] = wallSym;
-				}
+				G.cells[theseusPosition].setDisplay(theseusSym);
+				G.cells[minotaurPosition].setDisplay(minotaurSym);
+				G.cells[exitPosition].setDisplay(exitSym);
 				
 				return G;
 		},
@@ -52,7 +49,7 @@ const Theseus = Game({
 		//0:N,1:E,2:S,3:W
 		moveTheseus(G,ctx,direction) {
 			const cells = [...G.cells];
-			cells[G.theseusPos] = null;
+			cells[G.theseusPos].setDisplay(null);
 			switch(direction) {
 				case(0):
 					if(G.theseusRow > 0){
@@ -79,7 +76,7 @@ const Theseus = Game({
 			}
 
 			G.theseusPos = G.theseusRow * boardWidth + G.theseusCol;
-			cells[G.theseusPos] = ctx.currentPlayer;
+			cells[G.theseusPos].setDisplay(theseusSym);
 			return {...G,cells};
 		},
 
@@ -87,7 +84,7 @@ const Theseus = Game({
 		moveMinotaur(G,ctx,direction) {
 			const cells = [...G.cells];
 			
-			cells[G.minotaurPos] = null;
+			cells[G.minotaurPos].setDisplay(null);
 			
 			switch(direction) {
 				case(0):
@@ -115,7 +112,7 @@ const Theseus = Game({
 			}
 
 			G.minotaurPos = G.minotaurRow * boardWidth + G.minotaurCol;
-			cells[G.minotaurPos] = ctx.currentPlayer;
+			cells[G.minotaurPos].setDisplay(minotaurSym);
 			return {...G,cells};
 		},
 		
@@ -125,7 +122,7 @@ const Theseus = Game({
 			for (let i = 0; i < boardHeight; i++) {
 				for(let j=0;j<boardWidth;j++) {
 					let id = boardWidth * i + j;
-					cells[id] = id;
+					cells[id].setDisplay(id);
 				}
 			}
 			return {...G,cells};
