@@ -1,5 +1,4 @@
 import React from 'react';
-import Tile from './Tile';
 import {boardWidth,boardHeight} from './constants';
 
 export class TheseusBoard extends React.Component {
@@ -29,6 +28,39 @@ export class TheseusBoard extends React.Component {
 			this.props.moves.moveMinotaur(id);
 			this.props.events.endTurn();
 		}
+	}
+	
+	//Removes the corresponding borders from cells with walls[side]=false.
+	removeWalls(id){
+		var cell = document.getElementById("Cell" + id);
+		if(!this.props.G.cells[id].walls[0]){
+			cell.style.borderTop = "none"
+		}
+		
+		if(!this.props.G.cells[id].walls[1]){
+			cell.style.borderRight = "0";
+		}
+		
+		if(!this.props.G.cells[id].walls[2]){
+			cell.style.borderBottom = "0";
+		}
+		
+		if(!this.props.G.cells[id].walls[3]){
+			cell.style.borderLeft = "0";
+		}
+	}
+	
+	//For actions needed to be done after the board renders.
+	componentDidMount(){
+		//Call removeWalls on all cells.
+		//Might need to add this to a componentDidUpdate if walls ever change mid-game.
+		for (let i = 0; i < boardHeight; i++) {
+			for(let j=0;j<boardWidth;j++) {
+				const id = boardWidth * i + j;
+				this.removeWalls(id);
+			}
+		}
+		
 	}
 	
 	/*
@@ -109,7 +141,8 @@ export class TheseusBoard extends React.Component {
 
 	
 	//Main engine for rendering the board.
-	render() {
+	render() {	
+		//Message for gameover and current turn.
 		let message = ''
 		if(this.props.ctx.gameover) {
 			message = <div>Winner: {this.props.ctx.gameover}</div>;
@@ -121,6 +154,7 @@ export class TheseusBoard extends React.Component {
 			message = <div> Current Player: Minotaur</div>;
 		}
 		
+		//Default cell style.
 		const cellStyle = {
 			border: '1px solid #555',
 			width: '50px',
@@ -129,13 +163,14 @@ export class TheseusBoard extends React.Component {
 			textAlign: 'center',
 		};
 		
+		//Creating the board from the cells.
 		let tbody =[];
 		for (let i = 0; i < boardHeight; i++) {
 			let cells=[]
 			for(let j=0;j<boardWidth;j++) {
 				const id = boardWidth * i + j;
 				cells.push(
-					<td style={cellStyle} key={id}>
+					<td style={cellStyle} key={id} id={"Cell" + id}>
 						{this.props.G.cells[id].display}
 					</td>
 				);
@@ -163,6 +198,7 @@ export class TheseusBoard extends React.Component {
 				{message}
 			</div>
 		);
+		
 		
 	}
 
