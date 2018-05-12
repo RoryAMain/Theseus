@@ -1,6 +1,6 @@
 function Tile(displayIn){
 	//Start with no walls.
-	this.walls = [true,true,true,true];
+	this.walls = [0,0,0,0];
 	this.display = displayIn;
 	
 	this.getWalls = function(){

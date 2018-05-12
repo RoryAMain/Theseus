@@ -1,5 +1,5 @@
-const boardWidth = 7;
-const boardHeight = 7;
+const boardWidth = 20;
+const boardHeight = 20;
 
 const theseusStartingRow = 1;
 const theseusStartingCol = 1;
