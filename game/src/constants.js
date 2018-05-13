@@ -1,17 +1,17 @@
-const boardWidth = 20;
-const boardHeight = 20;
+const boardWidth = 10;
+const boardHeight = 10;
 
-const theseusStartingRow = 1;
-const theseusStartingCol = 1;
+const theseusStartingRow = 0;
+const theseusStartingCol = 0;
 const theseusSym = 'T';
 
-const minotaurStartingRow = 5;
-const minotaurStartingCol = 1;
+const minotaurStartingRow = boardHeight-1;
+const minotaurStartingCol = 0;
 const minotaurSym = 'M';
 
 
-const exitRow = 5;
-const exitCol = 6;
+const exitRow = boardHeight-1;
+const exitCol = boardWidth-1;
 const exitSym = "X";
 
 export{

@@ -65,7 +65,7 @@ export class TheseusBoard extends React.Component {
 	}
 	
 	generateMaze(){
-		var Maze = newMaze(boardHeight,boardWidth);
+		var Maze = newMaze(boardWidth,boardHeight);
 		for(let i = 0; i < Maze.length; i++){
 			for(let j = 0; j < Maze[i].length; j++){
 				const id = boardWidth * i + j;
@@ -156,13 +156,37 @@ export class TheseusBoard extends React.Component {
 		//Message for gameover and current turn.
 		let message = ''
 		if(this.props.ctx.gameover) {
-			message = <div>Winner: {this.props.ctx.gameover}</div>;
+			message = 
+			<div>
+				Winner: {this.props.ctx.gameover}
+			</div>;
 		}
 		else if(this.isTheseusTurn()) {
-			message = <div> Current Player: Theseus</div>;
+			message = <div>
+				<div>
+					<div>
+						Current Player: Theseus
+					</div>
+					<button onClick={()=> this.moveTheseusButton(0)}>N</button>
+					<button onClick={()=> this.moveTheseusButton(1)}>E</button>
+					<button onClick={()=> this.moveTheseusButton(2)}>S</button>
+					<button onClick={()=> this.moveTheseusButton(3)}>W</button>
+				</div>
+			</div>;
 		}
 		else {
-			message = <div> Current Player: Minotaur</div>;
+			message = 
+			<div> 
+				<div>
+					<div>
+						Current Player: Minotaur
+					</div>
+					<button onClick={()=> this.moveMinotaurButton(0)}>N</button>
+					<button onClick={()=> this.moveMinotaurButton(1)}>E</button>
+					<button onClick={()=> this.moveMinotaurButton(2)}>S</button>
+					<button onClick={()=> this.moveMinotaurButton(3)}>W</button>
+				</div>
+			</div>;
 		}
 		
 		//Default cell style.
@@ -195,16 +219,6 @@ export class TheseusBoard extends React.Component {
 					<tbody>{tbody}</tbody>
 				</table>
 				
-				<h1>Theseus Controls</h1>
-				<button onClick={()=> this.moveTheseusButton(0)}>N</button>
-				<button onClick={()=> this.moveTheseusButton(1)}>E</button>
-				<button onClick={()=> this.moveTheseusButton(2)}>S</button>
-				<button onClick={()=> this.moveTheseusButton(3)}>W</button>
-				<h1>Minotaur Controls</h1>
-				<button onClick={()=> this.moveMinotaurButton(0)}>N</button>
-				<button onClick={()=> this.moveMinotaurButton(1)}>E</button>
-				<button onClick={()=> this.moveMinotaurButton(2)}>S</button>
-				<button onClick={()=> this.moveMinotaurButton(3)}>W</button>
 				
 				{message}
 			</div>
