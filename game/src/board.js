@@ -152,7 +152,7 @@ export class TheseusBoard extends React.Component {
 
 	
 	//Main engine for rendering the board.
-	render() {	
+	render() {
 		//Message for gameover and current turn.
 		let message = ''
 		if(this.props.ctx.gameover) {
@@ -167,10 +167,16 @@ export class TheseusBoard extends React.Component {
 					<div>
 						Current Player: Theseus
 					</div>
-					<button onClick={()=> this.moveTheseusButton(0)}>N</button>
-					<button onClick={()=> this.moveTheseusButton(1)}>E</button>
-					<button onClick={()=> this.moveTheseusButton(2)}>S</button>
-					<button onClick={()=> this.moveTheseusButton(3)}>W</button>
+					<div>
+						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(0)}>N</button>
+					</div>
+					<div>
+						<button style={{position:'relative',left:'35px',}} onClick={()=> this.moveTheseusButton(3)}>W</button>
+						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(1)}>E</button>
+					</div>
+					<div>
+						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(2)}>S</button>
+					</div>
 				</div>
 			</div>;
 		}
@@ -181,10 +187,16 @@ export class TheseusBoard extends React.Component {
 					<div>
 						Current Player: Minotaur
 					</div>
-					<button onClick={()=> this.moveMinotaurButton(0)}>N</button>
-					<button onClick={()=> this.moveMinotaurButton(1)}>E</button>
-					<button onClick={()=> this.moveMinotaurButton(2)}>S</button>
-					<button onClick={()=> this.moveMinotaurButton(3)}>W</button>
+					<div>
+						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveMinotaurButton(0)}>N</button>
+					</div>
+					<div>
+						<button style={{position:'relative',left:'35px',}} onClick={()=> this.moveMinotaurButton(3)}>W</button>
+						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveMinotaurButton(1)}>E</button>
+					</div>
+					<div>
+						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveMinotaurButton(2)}>S</button>
+					</div>
 				</div>
 			</div>;
 		}
@@ -215,12 +227,15 @@ export class TheseusBoard extends React.Component {
 		
 		return(
 			<div>
-				<table id="board">
-					<tbody>{tbody}</tbody>
-				</table>
+				<div>
+					<table id="board">
+						<tbody>{tbody}</tbody>
+					</table>
 				
-				
-				{message}
+					<div>
+						{message}
+					</div>
+				</div>
 			</div>
 		);
 		
