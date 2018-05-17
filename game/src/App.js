@@ -29,6 +29,7 @@ const Theseus = Game({
 				minotaurCol: minotaurStartingCol,
 				theseusPos: theseusStartingRow*boardWidth + theseusStartingCol,
 				minotaurPos: minotaurStartingRow*boardWidth + minotaurStartingCol,
+				exitPos: exitRow * boardWidth + exitCol,
 				};
 				
 				for(var j = 0; j<G.cells.length;j++){
@@ -110,7 +111,12 @@ const Theseus = Game({
 				default:
 					break;
 			}
-
+			
+			//If the minotaur was standing on the exit, rewrite the exit symbol.
+			if(G.minotaurPos === G.exitPos){
+				cells[G.exitPos].setDisplay(exitSym);
+			}
+			
 			G.minotaurPos = G.minotaurRow * boardWidth + G.minotaurCol;
 			cells[G.minotaurPos].setDisplay(minotaurSym);
 			return {...G,cells};
