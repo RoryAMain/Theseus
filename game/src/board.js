@@ -80,6 +80,9 @@ export class TheseusBoard extends React.Component {
 		
 		this.generateMaze();
 		
+		let numberOfWallsToDelete = Math.round((boardWidth*boardHeight)/10);
+		this.deleteRandomWalls(numberOfWallsToDelete);
+		
 		//Call removeWalls on all cells.
 		//Might need to add this to a componentDidUpdate if walls ever change mid-game.
 		for (let i = 0; i < boardHeight; i++) {
@@ -148,6 +151,77 @@ export class TheseusBoard extends React.Component {
 			}
 			
 			return false;
+	}
+	
+	getRandInt(minIn,maxIn){
+		return Math.floor(Math.random() * (maxIn-minIn)) + minIn;
+	}
+	
+	deleteRandomWalls(numberOfWalls){
+		//Choose a cell that isn't one of the outside walls,
+		for(let x = 0; x<numberOfWalls; x++){
+			let randRow = this.getRandInt(1,boardHeight-1);
+			let randCol = this.getRandInt(1,boardWidth-1);
+			let randCell = randRow*boardWidth + randCol;
+			
+			//To show which walls were deleted.
+			//this.props.G.cells[randCell].setDisplay("D");
+			
+			//From the existing walls choose a random one to delete.
+			let wallList = [];
+			let newWallList = [];
+			for(let x =0;x<3;x++){
+				if(this.props.G.cells[randCell].walls[x] === 1){
+					wallList.push(x);
+				}
+				newWallList.push(this.props.G.cells[randCell].walls[x]);
+			}
+			//console.log("Length:" + wallList.length);
+			let randWall = this.getRandInt(0,wallList.length);
+			newWallList[randWall] = 1;
+			
+			this.updateWalls(randCell,newWallList);
+			
+			
+			//Find neighboring cell.
+			
+			let neighborCell = null;
+			let neighborWall = null;
+			switch(randWall){
+				case(0):
+					neighborCell = randCell - boardWidth;
+					neighborWall = 2;
+					break;
+				case(1):
+					neighborCell = randCell + 1;
+					neighborWall = 3;
+					break;
+				case(2):
+					neighborCell = randCell + boardWidth;
+					neighborWall = 0;
+					break;
+				case(3):
+					neighborCell = randCell - 1;
+					neighborWall = 1;
+					break;
+				default:
+					break;
+				
+			}
+			//console.log("Cell: " + randCell);
+			//console.log("Wall: " + randWall);
+			//console.log("Neighbor:" + neighborCell);
+			//Delete neighboring cell's corresponding wall.
+			//console.log(neighborCell);
+			let neighborWallList = [];
+			for(let x =0;x<3;x++){
+				neighborWallList.push(this.props.G.cells[neighborCell].walls[x]);
+			}
+			
+			neighborWallList[neighborWall] = 1;
+			
+			this.updateWalls(neighborCell,neighborWallList);
+		}
 	}
 
 	
