@@ -29,9 +29,6 @@ export class TheseusBoard extends React.Component {
 		if(!this.isTheseusTurn()){
 			if(!this.wallCheck(id)){
 				this.props.moves.moveMinotaur(id);
-				if(!this.wallCheck(id)){
-					this.props.moves.moveMinotaur(id);
-				}
 				this.props.events.endTurn();
 			}
 		}
@@ -73,25 +70,6 @@ export class TheseusBoard extends React.Component {
 				this.updateWalls(id,walls);
 			}
 		}
-	}
-	
-	//For actions needed to be done after the board renders.
-	componentDidMount(){
-		
-		this.generateMaze();
-		
-		let numberOfWallsToDelete = Math.round((boardWidth*boardHeight)/10);
-		this.deleteRandomWalls(numberOfWallsToDelete);
-		
-		//Call removeWalls on all cells.
-		//Might need to add this to a componentDidUpdate if walls ever change mid-game.
-		for (let i = 0; i < boardHeight; i++) {
-			for(let j=0;j<boardWidth;j++) {
-				const id = boardWidth * i + j;
-				this.removeWalls(id);
-			}
-		}
-		
 	}
 	
 	wallCheck(id)
@@ -208,11 +186,7 @@ export class TheseusBoard extends React.Component {
 					break;
 				
 			}
-			//console.log("Cell: " + randCell);
-			//console.log("Wall: " + randWall);
-			//console.log("Neighbor:" + neighborCell);
-			//Delete neighboring cell's corresponding wall.
-			//console.log(neighborCell);
+
 			let neighborWallList = [];
 			for(let x =0;x<3;x++){
 				neighborWallList.push(this.props.G.cells[neighborCell].walls[x]);
@@ -222,6 +196,79 @@ export class TheseusBoard extends React.Component {
 			
 			this.updateWalls(neighborCell,neighborWallList);
 		}
+	}
+	
+	
+	//Given a cell id, returns an array of cells that can be seen
+	getLineOfSight(id){
+		//start with an empty list
+		let cellList = [];
+		//you can always see where you're standing
+		cellList.push(id);
+		
+		//Check each direction
+		for(let x = 0; x<3;x++){
+			let noWall = true;
+			let currentCell = id;
+			
+			
+			while(noWall){
+				if(this.props.G.cells[currentCell].walls[x] === 1){
+					
+					switch(x){
+					case(0):
+						currentCell = currentCell - boardWidth;
+						break;
+					case(1):
+						currentCell = currentCell + 1;
+						break;
+					case(2):
+						currentCell = currentCell + boardWidth;
+						break;
+					case(3):
+						currentCell = currentCell - 1;
+						break;
+					default:
+						break;
+					}
+					
+					cellList.push(currentCell);
+				}
+				else{
+					noWall = false;
+				}
+			}
+		}
+		
+		return cellList;
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//Above: Functions.
+	//
+	//Below: Things ran on start.
+	//////////////////////////////////////////////////////////////////////////
+	
+	
+	//For actions needed to be done after the board renders.
+	componentDidMount(){
+		
+		this.generateMaze();
+		
+		let numberOfWallsToDelete = Math.round((boardWidth*boardHeight)/10);
+		this.deleteRandomWalls(numberOfWallsToDelete);
+		
+		//Call removeWalls on all cells.
+		//Might need to add this to a componentDidUpdate if walls ever change mid-game.
+		for (let i = 0; i < boardHeight; i++) {
+			for(let j=0;j<boardWidth;j++) {
+				const id = boardWidth * i + j;
+				this.removeWalls(id);
+			}
+		}
+		
+		
 	}
 
 	

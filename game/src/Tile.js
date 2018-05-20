@@ -1,5 +1,5 @@
 function Tile(displayIn){
-	//Start with no walls.
+	//Start with all walls.
 	this.walls = [0,0,0,0];
 	this.display = displayIn;
 	
