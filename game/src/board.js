@@ -24,7 +24,7 @@ export class TheseusBoard extends React.Component {
 		return false;
 	}
 	
-	//Launched by Minotaur Controls, triggers 2 Minotaur moves in the same direction.
+	//Launched by Minotaur Controls, triggers 1 Minotaur move.
 	moveMinotaurButton(id){
 		if(!this.isTheseusTurn()){
 			if(!this.wallCheck(id)){
@@ -258,6 +258,86 @@ export class TheseusBoard extends React.Component {
 		cell.style.backgroundColor = 'lightGrey';
 	}
 
+	//Return true if Theseus is in the Minotaur's LOS.
+	doesMinotaurSeeTheseus(){
+		let minotaurLOS = this.getLineOfSight(this.props.G.minotaurPos);
+		for(let x = 0; x < minotaurLOS.length; x++){
+			if(minotaurLOS[x] === this.props.G.theseusPos){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//Takes 2 moves into the direction of id. If a wall is hit, turn off minotaur rage.
+	minotaurRage(direction){
+		if(!this.isTheseusTurn()){
+			if(!this.wallCheck(direction)){
+				console.log("Rage: " + direction)
+				this.props.moves.moveMinotaur(direction);
+				if(!this.wallCheck(direction)){
+					this.props.moves.moveMinotaur(direction);
+				}
+				else{
+					this.props.G.minotaurRageTrigger = false;
+					this.props.G.minotaurRageDirection = -1;
+				}
+				this.props.events.endTurn();
+			}
+			else{
+				this.props.G.minotaurRageTrigger = false;
+				this.props.G.minotaurRageDirection = -1;
+			}
+		}
+	}
+
+	directionToTheseus(id){
+		//We need to check N/S before E/W
+		if(id < this.props.G.theseusPos){
+			
+			//Check S
+			for(let x=1;x<boardHeight+1;x++){
+				let tempPos = (id+(x*boardWidth));
+				//console.log("Checking: " + tempPos)
+				if(tempPos === this.props.G.theseusPos){
+					return 2;
+				}
+			}
+
+			//Check E
+			for(let x=0;x<boardWidth;x++){
+				let tempPos = id + x - 1;
+				//console.log("Checking: " + tempPos)
+				if(tempPos === this.props.G.theseusPos){
+					return 1;
+				} 
+			}
+		}
+		else{
+			//Check N
+			for(let x=1;x<boardHeight+1;x++){
+				let tempPos = id - (x*boardWidth);
+				if(tempPos === this.props.G.theseusPos){
+					return 0;
+				}
+			}
+
+			//Check W
+			for(let x=0;x<boardWidth;x++){
+				let tempPos = id - x - 1;
+				//console.log("Checking: " + tempPos);
+				if(tempPos === this.props.G.theseusPos){
+					return 3;
+				}
+			}
+
+		}
+
+		//Error
+		return -1;
+	}
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//Above: Functions.
@@ -294,7 +374,7 @@ export class TheseusBoard extends React.Component {
 		//Clear fog from Theseus LOS
 		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
 		for(let x = 0; x<theseusLOS.length;x++){
-			var cell = theseusLOS[x]
+			let cell = theseusLOS[x]
 			this.removeFogOfWar(cell);
 
 		}
@@ -303,11 +383,12 @@ export class TheseusBoard extends React.Component {
 		//For testing purposes.
 		let minotaurLOS = this.getLineOfSight(this.props.G.minotaurPos);
 		for(let x = 0; x<minotaurLOS.length;x++){
-			var cell = minotaurLOS[x]
+			let cell = minotaurLOS[x]
 			this.removeFogOfWar(cell);
 
 		}
-		
+
+
 	}
 
 	//For actions needed to be done every update.
@@ -326,7 +407,7 @@ export class TheseusBoard extends React.Component {
 		//Clear theseus LOS
 		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
 		for(let x = 0; x<theseusLOS.length;x++){
-			var cell = theseusLOS[x]
+			let cell = theseusLOS[x]
 			this.removeFogOfWar(cell);
 
 		}
@@ -334,9 +415,18 @@ export class TheseusBoard extends React.Component {
 		//Clear minotaur LOS, for testing purposes.
 		let minotaurLOS = this.getLineOfSight(this.props.G.minotaurPos);
 		for(let x = 0; x<minotaurLOS.length;x++){
-			var cell = minotaurLOS[x]
+			let cell = minotaurLOS[x]
 			this.removeFogOfWar(cell);
 
+		}
+		if(this.props.G.minotaurRageTrigger){
+			this.minotaurRage(this.props.G.minotaurRageDirection);
+		}
+		//Minotaur Rage if he sees Theseus.
+		else if((this.props.G.minotaurPos != this.props.G.theseusPos) && this.doesMinotaurSeeTheseus()){
+			this.props.G.minotaurRageTrigger = true;
+			this.props.G.minotaurRageDirection = this.directionToTheseus(this.props.G.minotaurPos);
+			this.minotaurRage(this.props.G.minotaurRageDirection);
 		}
 	}
 

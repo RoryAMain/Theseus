@@ -30,6 +30,8 @@ const Theseus = Game({
 				theseusPos: theseusStartingRow*boardWidth + theseusStartingCol,
 				minotaurPos: minotaurStartingRow*boardWidth + minotaurStartingCol,
 				exitPos: exitRow * boardWidth + exitCol,
+				minotaurRageTrigger: false,
+				minotaurRageDirection: -1,
 				};
 				
 				for(var j = 0; j<G.cells.length;j++){
