@@ -2,6 +2,7 @@ function Tile(displayIn){
 	//Start with all walls.
 	this.walls = [0,0,0,0];
 	this.display = displayIn;
+	this.seen = false;
 	
 	this.getWalls = function(){
 		return this.walls;

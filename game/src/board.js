@@ -207,7 +207,7 @@ export class TheseusBoard extends React.Component {
 		cellList.push(id);
 		
 		//Check each direction
-		for(let x = 0; x<3;x++){
+		for(let x = 0; x<4;x++){
 			let noWall = true;
 			let currentCell = id;
 			
@@ -243,6 +243,21 @@ export class TheseusBoard extends React.Component {
 		return cellList;
 	}
 
+	setFogOfWar(id){
+		var cell = document.getElementById("Cell" + id);
+		cell.style.backgroundColor = 'black';
+	}
+
+	removeFogOfWar(id){
+		var cell = document.getElementById("Cell" + id);
+		cell.style.backgroundColor = 'white';
+	}
+
+	setSeen(id){
+		var cell = document.getElementById("Cell" + id);
+		cell.style.backgroundColor = 'lightGrey';
+	}
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//Above: Functions.
@@ -267,8 +282,62 @@ export class TheseusBoard extends React.Component {
 				this.removeWalls(id);
 			}
 		}
+
+		//Set Fog of War on every unseen tile.
+		for (let i = 0; i < boardHeight; i++) {
+			for(let j=0;j<boardWidth;j++) {
+				const id = boardWidth * i + j;
+				this.setFogOfWar(id);
+			}
+		}
+
+		//Clear fog from Theseus LOS
+		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
+		for(let x = 0; x<theseusLOS.length;x++){
+			var cell = theseusLOS[x]
+			this.removeFogOfWar(cell);
+
+		}
+
+		//Clear fog from Minotaur LOS
+		//For testing purposes.
+		let minotaurLOS = this.getLineOfSight(this.props.G.minotaurPos);
+		for(let x = 0; x<minotaurLOS.length;x++){
+			var cell = minotaurLOS[x]
+			this.removeFogOfWar(cell);
+
+		}
 		
-		
+	}
+
+	//For actions needed to be done every update.
+	componentDidUpdate(){
+		//Handling fog of war.
+		for (let i = 0; i < boardHeight; i++) {
+			for(let j=0;j<boardWidth;j++) {
+				const id = boardWidth * i + j;
+				var cell = document.getElementById("Cell" + id);
+				if(cell.style.backgroundColor === "white"){
+					this.setSeen(id);
+				}
+			}
+		}
+
+		//Clear theseus LOS
+		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
+		for(let x = 0; x<theseusLOS.length;x++){
+			var cell = theseusLOS[x]
+			this.removeFogOfWar(cell);
+
+		}
+
+		//Clear minotaur LOS, for testing purposes.
+		let minotaurLOS = this.getLineOfSight(this.props.G.minotaurPos);
+		for(let x = 0; x<minotaurLOS.length;x++){
+			var cell = minotaurLOS[x]
+			this.removeFogOfWar(cell);
+
+		}
 	}
 
 	
@@ -324,7 +393,7 @@ export class TheseusBoard extends React.Component {
 		
 		//Default cell style.
 		const cellStyle = {
-			border: '1px solid #555',
+			border: '2px solid #555',
 			width: '50px',
 			height: '50px',
 			lineHeight: '50px',
