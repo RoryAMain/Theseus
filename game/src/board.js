@@ -8,9 +8,16 @@ export class TheseusBoard extends React.Component {
 	moveTheseusButton(id){
 		if(this.isTheseusTurn()){
 			if(!this.wallCheck(id)){
+				this.props.G.cells[this.props.G.theseusPos].scent = id;
 				this.props.moves.moveTheseus(id);
 				this.props.events.endTurn();
 			}
+		}
+	}
+
+	theseusWait(){
+		if(this.isTheseusTurn()){
+			this.props.events.endTurn();
 		}
 	}
 	
@@ -274,7 +281,7 @@ export class TheseusBoard extends React.Component {
 	minotaurRage(direction){
 		if(!this.isTheseusTurn()){
 			if(!this.wallCheck(direction)){
-				console.log("Rage: " + direction)
+				//console.log("Rage: " + direction)
 				this.props.moves.moveMinotaur(direction);
 				if(!this.wallCheck(direction)){
 					this.props.moves.moveMinotaur(direction);
@@ -338,6 +345,52 @@ export class TheseusBoard extends React.Component {
 		return -1;
 	}
 
+	//Chooses a random direction, prefers one that is not where you came from.
+	chooseWanderDirection(previousDirection){
+		let possibleDirections = [];
+		let backwards = -1;
+		switch(previousDirection){
+			case(0):
+				backwards = 2;
+				break;
+			case(1):
+				backwards = 3;
+				break;
+			case(2):
+				backwards = 0;
+				break;
+			case(3):
+				backwards = 1;
+				break;
+			default:
+				break;
+		}
+		for(let x=0;x<4;x++){
+			if(!this.wallCheck(x)){
+				possibleDirections.push(x);
+			}
+		}
+		console.log("Possible Directions: ");
+		console.log(possibleDirections);
+		if(possibleDirections.length < 2){
+			console.log("Only 1 direction.")
+			return possibleDirections[0];
+		}
+		else{
+			let tempDirections = [];
+			for(let x=0;x < possibleDirections.length;x++)
+			{
+				if(possibleDirections[x] !== backwards){
+					tempDirections.push(possibleDirections[x]);
+				}
+			}
+			let randDir = this.getRandInt(0,tempDirections.length);
+			console.log("Randomly chose: " + randDir);
+			return tempDirections[randDir];
+
+		}
+	}
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//Above: Functions.
@@ -379,16 +432,6 @@ export class TheseusBoard extends React.Component {
 
 		}
 
-		//Clear fog from Minotaur LOS
-		//For testing purposes.
-		let minotaurLOS = this.getLineOfSight(this.props.G.minotaurPos);
-		for(let x = 0; x<minotaurLOS.length;x++){
-			let cell = minotaurLOS[x]
-			this.removeFogOfWar(cell);
-
-		}
-
-
 	}
 
 	//For actions needed to be done every update.
@@ -412,22 +455,30 @@ export class TheseusBoard extends React.Component {
 
 		}
 
-		//Clear minotaur LOS, for testing purposes.
-		let minotaurLOS = this.getLineOfSight(this.props.G.minotaurPos);
-		for(let x = 0; x<minotaurLOS.length;x++){
-			let cell = minotaurLOS[x]
-			this.removeFogOfWar(cell);
 
+		//Handling Minotaur Movement
+		if(!this.isTheseusTurn()){
+			//If currently Raging
+			if(this.props.G.minotaurRageTrigger){
+				this.minotaurRage(this.props.G.minotaurRageDirection);
+			}
+			//Minotaur Rage if he sees Theseus.
+			else if((this.props.G.minotaurPos !== this.props.G.theseusPos) && this.doesMinotaurSeeTheseus()){
+				this.props.G.minotaurRageTrigger = true;
+				this.props.G.minotaurRageDirection = this.directionToTheseus(this.props.G.minotaurPos);
+				this.minotaurRage(this.props.G.minotaurRageDirection);
+			}
+			//If there's a scent.
+			else if(this.props.G.cells[this.props.G.minotaurPos].scent !== -1){
+				this.moveMinotaurButton(this.props.G.cells[this.props.G.minotaurPos].scent);
+			}
+			//Otherwise wander.
+			else{
+				this.props.G.minotaurWanderDirection = this.chooseWanderDirection(this.props.G.minotaurWanderDirection);
+				this.moveMinotaurButton(this.props.G.minotaurWanderDirection);
+			}
 		}
-		if(this.props.G.minotaurRageTrigger){
-			this.minotaurRage(this.props.G.minotaurRageDirection);
-		}
-		//Minotaur Rage if he sees Theseus.
-		else if((this.props.G.minotaurPos != this.props.G.theseusPos) && this.doesMinotaurSeeTheseus()){
-			this.props.G.minotaurRageTrigger = true;
-			this.props.G.minotaurRageDirection = this.directionToTheseus(this.props.G.minotaurPos);
-			this.minotaurRage(this.props.G.minotaurRageDirection);
-		}
+
 	}
 
 	
@@ -441,41 +492,20 @@ export class TheseusBoard extends React.Component {
 				Winner: {this.props.ctx.gameover}
 			</div>;
 		}
-		else if(this.isTheseusTurn()) {
+		else{
 			message = <div>
 				<div>
-					<div>
-						Current Player: Theseus
-					</div>
 					<div>
 						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(0)}>N</button>
 					</div>
 					<div>
 						<button style={{position:'relative',left:'35px',}} onClick={()=> this.moveTheseusButton(3)}>W</button>
 						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(1)}>E</button>
+						<button style={{position:'relative',left:'100px',}} onClick={()=> this.theseusWait()}>Wait</button>
+
 					</div>
 					<div>
 						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(2)}>S</button>
-					</div>
-				</div>
-			</div>;
-		}
-		else {
-			message = 
-			<div> 
-				<div>
-					<div>
-						Current Player: Minotaur
-					</div>
-					<div>
-						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveMinotaurButton(0)}>N</button>
-					</div>
-					<div>
-						<button style={{position:'relative',left:'35px',}} onClick={()=> this.moveMinotaurButton(3)}>W</button>
-						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveMinotaurButton(1)}>E</button>
-					</div>
-					<div>
-						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveMinotaurButton(2)}>S</button>
 					</div>
 				</div>
 			</div>;

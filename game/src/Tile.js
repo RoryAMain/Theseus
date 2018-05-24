@@ -3,6 +3,7 @@ function Tile(displayIn){
 	this.walls = [0,0,0,0];
 	this.display = displayIn;
 	this.seen = false;
+	this.scent = -1;
 	
 	this.getWalls = function(){
 		return this.walls;

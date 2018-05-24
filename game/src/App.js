@@ -32,6 +32,7 @@ const Theseus = Game({
 				exitPos: exitRow * boardWidth + exitCol,
 				minotaurRageTrigger: false,
 				minotaurRageDirection: -1,
+				minotaurWanderDirection: -1,
 				};
 				
 				for(var j = 0; j<G.cells.length;j++){
