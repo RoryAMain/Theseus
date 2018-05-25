@@ -10,6 +10,7 @@ export class TheseusBoard extends React.Component {
 			if(!this.wallCheck(id)){
 				this.props.G.cells[this.props.G.theseusPos].scent = id;
 				this.props.moves.moveTheseus(id);
+				this.updateFogOfWar();
 				this.props.events.endTurn();
 			}
 		}
@@ -295,6 +296,7 @@ export class TheseusBoard extends React.Component {
 			else{
 				this.props.G.minotaurRageTrigger = false;
 				this.props.G.minotaurRageDirection = -1;
+				this.props.events.endTurn();
 			}
 		}
 	}
@@ -370,10 +372,10 @@ export class TheseusBoard extends React.Component {
 				possibleDirections.push(x);
 			}
 		}
-		console.log("Possible Directions: ");
-		console.log(possibleDirections);
+		//console.log("Possible Directions: ");
+		//console.log(possibleDirections);
 		if(possibleDirections.length < 2){
-			console.log("Only 1 direction.")
+			//console.log("Only 1 direction.")
 			return possibleDirections[0];
 		}
 		else{
@@ -385,8 +387,49 @@ export class TheseusBoard extends React.Component {
 				}
 			}
 			let randDir = this.getRandInt(0,tempDirections.length);
-			console.log("Randomly chose: " + randDir);
+			//console.log("Randomly chose: " + randDir);
 			return tempDirections[randDir];
+
+		}
+	}
+
+	//Checks if the target is within a circular range of the starting cell.
+	areaCheck(startingCell,targetCell,range){
+		if(range <=0 || startingCell <0 || startingCell > boardWidth*boardHeight || targetCell < 0 || targetCell > boardWidth*boardHeight ){
+			return false;
+		}
+
+		for(let x = -range; x<=range;x++){
+			for(let y = -range;y<=range;y++){
+				let tempCell = startingCell + (x*boardWidth) + y;
+				if(tempCell >=0 && tempCell <= boardWidth*boardHeight){
+					if(tempCell === targetCell){
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	updateFogOfWar(){
+		//Handling fog of war.
+		for (let i = 0; i < boardHeight; i++) {
+			for(let j=0;j<boardWidth;j++) {
+				const id = boardWidth * i + j;
+				var cell = document.getElementById("Cell" + id);
+				if(cell.style.backgroundColor === "white"){
+					this.setSeen(id);
+				}
+			}
+		}
+
+		//Clear theseus LOS
+		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
+		for(let x = 0; x<theseusLOS.length;x++){
+			let cell = theseusLOS[x]
+			this.removeFogOfWar(cell);
 
 		}
 	}
@@ -436,49 +479,40 @@ export class TheseusBoard extends React.Component {
 
 	//For actions needed to be done every update.
 	componentDidUpdate(){
-		//Handling fog of war.
-		for (let i = 0; i < boardHeight; i++) {
-			for(let j=0;j<boardWidth;j++) {
-				const id = boardWidth * i + j;
-				var cell = document.getElementById("Cell" + id);
-				if(cell.style.backgroundColor === "white"){
-					this.setSeen(id);
-				}
+
+		if(this.isTheseusTurn){
+			if(this.doesMinotaurSeeTheseus() && !this.props.G.minotaurRageTrigger){
+				console.log("Theseus seen.")
+				this.props.G.minotaurRageTrigger = true;
+				this.props.G.minotaurRageDirection = this.directionToTheseus(this.props.G.minotaurPos);
 			}
 		}
 
-		//Clear theseus LOS
-		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
-		for(let x = 0; x<theseusLOS.length;x++){
-			let cell = theseusLOS[x]
-			this.removeFogOfWar(cell);
-
-		}
-
-
-		//Handling Minotaur Movement
-		if(!this.isTheseusTurn()){
+		if(!this.isTheseusTurn() && !this.props.ctx.gameover){
 			//If currently Raging
 			if(this.props.G.minotaurRageTrigger){
+				console.log("Raging");
 				this.minotaurRage(this.props.G.minotaurRageDirection);
 			}
 			//Minotaur Rage if he sees Theseus.
 			else if((this.props.G.minotaurPos !== this.props.G.theseusPos) && this.doesMinotaurSeeTheseus()){
+				console.log("Rage triggered.");
 				this.props.G.minotaurRageTrigger = true;
 				this.props.G.minotaurRageDirection = this.directionToTheseus(this.props.G.minotaurPos);
 				this.minotaurRage(this.props.G.minotaurRageDirection);
 			}
 			//If there's a scent.
-			else if(this.props.G.cells[this.props.G.minotaurPos].scent !== -1){
-				this.moveMinotaurButton(this.props.G.cells[this.props.G.minotaurPos].scent);
-			}
+			//else if(this.props.G.cells[this.props.G.minotaurPos].scent !== -1){
+			//	console.log("Following scent.");
+			//	this.moveMinotaurButton(this.props.G.cells[this.props.G.minotaurPos].scent);
+			//}
 			//Otherwise wander.
 			else{
+				console.log("Wandering");
 				this.props.G.minotaurWanderDirection = this.chooseWanderDirection(this.props.G.minotaurWanderDirection);
 				this.moveMinotaurButton(this.props.G.minotaurWanderDirection);
 			}
 		}
-
 	}
 
 	
@@ -510,6 +544,24 @@ export class TheseusBoard extends React.Component {
 				</div>
 			</div>;
 		}
+
+		let warning = ''
+		if(this.areaCheck(this.props.G.theseusPos,this.props.G.minotaurPos,1)){
+			warning =
+			<div>
+				<p>You hear the minotaur VERY CLOSE BY.</p>
+			</div>
+		}
+		else if(this.areaCheck(this.props.G.theseusPos,this.props.G.minotaurPos,2)){
+			warning =
+			<div>
+				<p>You hear stomping nearby.</p>
+			</div>
+		}
+		else{
+			warning = ''
+		}
+
 		
 		//Default cell style.
 		const cellStyle = {
@@ -544,6 +596,9 @@ export class TheseusBoard extends React.Component {
 				
 					<div>
 						{message}
+					</div>
+					<div>
+						{warning}
 					</div>
 				</div>
 			</div>

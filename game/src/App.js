@@ -33,6 +33,7 @@ const Theseus = Game({
 				minotaurRageTrigger: false,
 				minotaurRageDirection: -1,
 				minotaurWanderDirection: -1,
+				minotaurTurnTrigger: true,
 				};
 				
 				for(var j = 0; j<G.cells.length;j++){
@@ -156,6 +157,7 @@ const Theseus = Game({
 const App = Client({
 	game: Theseus,
 	board: TheseusBoard,
+	debug: true,
 });
 
 export default App;
