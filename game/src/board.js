@@ -580,7 +580,8 @@ export class TheseusBoard extends React.Component {
 				const id = boardWidth * i + j;
 				cells.push(
 					<td style={cellStyle} key={id} id={"Cell" + id}>
-						{this.props.G.cells[id].display}
+						<img src={require('./' + this.props.G.cells[id].display + '.jpg')} alt="Test" height = '50px' width = '50px'></img>
+
 					</td>
 				);
 			}
