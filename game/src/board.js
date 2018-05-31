@@ -252,13 +252,15 @@ export class TheseusBoard extends React.Component {
 	}
 
 	setFogOfWar(id){
-		var cell = document.getElementById("Cell" + id);
-		cell.style.backgroundColor = 'black';
+		//var cell = document.getElementById("Cell" + id);
+		//cell.style.backgroundColor = 'black';
+		this.props.G.cells[id].setDisplay("Blank");
 	}
 
 	removeFogOfWar(id){
-		var cell = document.getElementById("Cell" + id);
-		cell.style.backgroundColor = 'white';
+		//var cell = document.getElementById("Cell" + id);
+		//cell.style.backgroundColor = 'white';
+		this.props.G.cells[id].setDisplay("");
 	}
 
 	setSeen(id){
