@@ -157,7 +157,7 @@ const Theseus = Game({
 const App = Client({
 	game: Theseus,
 	board: TheseusBoard,
-	debug: true,
+	debug: false,
 });
 
 export default App;

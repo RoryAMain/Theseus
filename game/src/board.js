@@ -434,6 +434,40 @@ export class TheseusBoard extends React.Component {
 		}
 	}
 
+	getCellImage(id){
+
+		let cellSym = this.props.G.cells[id].display;
+
+		if(cellSym === null){
+			return null;
+		}
+		else{
+			return('./' + cellSym);
+		}
+	}
+
+	handleKeyInputs(event,self){
+		switch(event.keyCode){
+			case(38):
+				self.moveTheseusButton(0);
+				break;
+			case(39):
+				self.moveTheseusButton(1);
+				break;
+			case(40):
+				self.moveTheseusButton(2);
+				break;
+			case(37):
+				self.moveTheseusButton(3);
+				break;
+			case(32):
+				self.theseusWait();
+				break;
+			default:
+				break;
+		}
+	}
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//Above: Functions.
@@ -474,7 +508,14 @@ export class TheseusBoard extends React.Component {
 			this.removeFogOfWar(cell);
 
 		}
+		var self = this;
+		document.addEventListener("keydown",function(event){
+			if(!event){
+				event = window.event;
+			}
 
+			self.handleKeyInputs(event,self);
+		},false);
 	}
 
 	//For actions needed to be done every update.
@@ -515,6 +556,10 @@ export class TheseusBoard extends React.Component {
 		}
 	}
 
+	componentWillUnmount(){
+		document.removeEventListener("keydown",this.handleKeyInputs,false);
+	}
+
 	
 	//Main engine for rendering the board.
 	render() {
@@ -522,39 +567,26 @@ export class TheseusBoard extends React.Component {
 		let message = ''
 		if(this.props.ctx.gameover) {
 			message = 
-			<div>
+			<div style={{textAlign:'center'}}>
 				Winner: {this.props.ctx.gameover}
 			</div>;
 		}
 		else{
-			message = <div>
-				<div>
-					<div>
-						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(0)}>N</button>
-					</div>
-					<div>
-						<button style={{position:'relative',left:'35px',}} onClick={()=> this.moveTheseusButton(3)}>W</button>
-						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(1)}>E</button>
-						<button style={{position:'relative',left:'100px',}} onClick={()=> this.theseusWait()}>Wait</button>
-
-					</div>
-					<div>
-						<button style={{position:'relative',left:'100px',}} onClick={()=> this.moveTheseusButton(2)}>S</button>
-					</div>
-				</div>
+			message = <div style={{textAlign:'center'}}>
+				Move with arrow keys. Wait with space.
 			</div>;
 		}
 
 		let warning = ''
 		if(this.areaCheck(this.props.G.theseusPos,this.props.G.minotaurPos,1)){
 			warning =
-			<div>
+			<div style={{textAlign:'center'}}>
 				<p>You hear the minotaur VERY CLOSE BY.</p>
 			</div>
 		}
 		else if(this.areaCheck(this.props.G.theseusPos,this.props.G.minotaurPos,2)){
 			warning =
-			<div>
+			<div style={{textAlign:'center'}}>
 				<p>You hear stomping nearby.</p>
 			</div>
 		}
@@ -578,11 +610,22 @@ export class TheseusBoard extends React.Component {
 			let cells=[]
 			for(let j=0;j<boardWidth;j++) {
 				const id = boardWidth * i + j;
-				cells.push(
+				let cellImage = this.getCellImage(id);
+				if(cellImage === null){
+					cells.push(
 					<td style={cellStyle} key={id} id={"Cell" + id}>
-						{this.props.G.cells[id].display}
+						{cellImage}
 					</td>
-				);
+					);
+				}
+				else{
+					cells.push(
+					<td style={cellStyle} key={id} id={"Cell" + id}>
+						{<img src={require('./' + this.props.G.cells[id].display)} height='80%' width='80%' alt='characterGraphic'></img>}
+					</td>
+					);
+
+				}
 			}
 			tbody.push(<tr key={i}>{cells}</tr>);
 		}
@@ -590,7 +633,7 @@ export class TheseusBoard extends React.Component {
 		return(
 			<div>
 				<div>
-					<table id="board">
+					<table style={{margin:'0 auto'}} id="board">
 						<tbody>{tbody}</tbody>
 					</table>
 				
@@ -601,9 +644,14 @@ export class TheseusBoard extends React.Component {
 						{warning}
 					</div>
 				</div>
+				
+				<div>
+					<p style={{fontSize: '50%',textAlign:'center'}}>
+					Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a>, <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a>, and <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank" rel="noopener noreferrer">CC 3.0 BY</a>
+					</p>
+				</div>
 			</div>
 		);
-		
 		
 	}
 

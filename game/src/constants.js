@@ -3,15 +3,15 @@ const boardHeight = 10;
 
 const theseusStartingRow = 0;
 const theseusStartingCol = 0;
-const theseusSym = 'T';
+const theseusSym = 'warrior.svg';
 
 const minotaurStartingRow = boardHeight-1;
 const minotaurStartingCol = boardWidth-1;
-const minotaurSym = 'M';
+const minotaurSym = 'minotaur.svg';
 
 const exitRow = boardHeight-1;
 const exitCol = boardWidth-1;
-const exitSym = "X";
+const exitSym = 'flag.svg';
 
 export{
 	boardWidth,
