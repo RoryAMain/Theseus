@@ -258,7 +258,7 @@ export class TheseusBoard extends React.Component {
 
 	removeFogOfWar(id){
 		var cell = document.getElementById("Cell" + id);
-		cell.style.backgroundColor = 'white';
+		cell.style.background = 'white';
 	}
 
 	setSeen(id){
@@ -402,7 +402,9 @@ export class TheseusBoard extends React.Component {
 		for(let x = -range; x<=range;x++){
 			for(let y = -range;y<=range;y++){
 				let tempCell = startingCell + (x*boardWidth) + y;
-				if(tempCell >=0 && tempCell <= boardWidth*boardHeight){
+				let modTempCell = tempCell%boardWidth;
+				let modStartingCell = startingCell%boardWidth;
+				if(tempCell >=0 && tempCell <= boardWidth*boardHeight && Math.abs(modStartingCell-modTempCell) <= range ){
 					if(tempCell === targetCell){
 						return true;
 					}
@@ -508,6 +510,8 @@ export class TheseusBoard extends React.Component {
 			this.removeFogOfWar(cell);
 
 		}
+
+		//Create event listeners for keyboard controls.
 		var self = this;
 		document.addEventListener("keydown",function(event){
 			if(!event){
@@ -543,10 +547,10 @@ export class TheseusBoard extends React.Component {
 				this.minotaurRage(this.props.G.minotaurRageDirection);
 			}
 			//If there's a scent.
-			//else if(this.props.G.cells[this.props.G.minotaurPos].scent !== -1){
+			else if(this.props.G.cells[this.props.G.minotaurPos].scent !== -1){
 			//	console.log("Following scent.");
-			//	this.moveMinotaurButton(this.props.G.cells[this.props.G.minotaurPos].scent);
-			//}
+				this.moveMinotaurButton(this.props.G.cells[this.props.G.minotaurPos].scent);
+			}
 			//Otherwise wander.
 			else{
 				console.log("Wandering");
@@ -602,6 +606,7 @@ export class TheseusBoard extends React.Component {
 			height: '50px',
 			lineHeight: '50px',
 			textAlign: 'center',
+			background:'black',
 		};
 		
 		//Creating the board from the cells.
@@ -614,14 +619,14 @@ export class TheseusBoard extends React.Component {
 				if(cellImage === null){
 					cells.push(
 					<td style={cellStyle} key={id} id={"Cell" + id}>
-						{cellImage}
+						<div style = {{width:'100%', height:'100%' , overflow:'hidden'}}>{cellImage}</div>
 					</td>
 					);
 				}
 				else{
 					cells.push(
 					<td style={cellStyle} key={id} id={"Cell" + id}>
-						{<img src={require('./' + this.props.G.cells[id].display)} height='80%' width='80%' alt='characterGraphic'></img>}
+						{<div style={{width:'100%', height:'100%' , overflow:'hidden'}}><img src={require('./' + this.props.G.cells[id].display)} lineHeight='0' alt='characterGraphic'></img></div>}
 					</td>
 					);
 
