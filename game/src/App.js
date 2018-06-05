@@ -86,43 +86,53 @@ const Theseus = Game({
 		},
 
 		//0:N,1:E,2:S,3:W
-		moveMinotaur(G,ctx,direction) {
+		moveMinotaur(G,ctx,direction,distance) {
 			const cells = [...G.cells];
 			
-			cells[G.minotaurPos].setDisplay(null);
-			
-			switch(direction) {
-				case(0):
-					if(G.minotaurRow > 0){
-						G.minotaurRow--;
-					}
+			for(let x=0;x<distance;x++){
+				cells[G.minotaurPos].setDisplay(null);
+				
+				switch(direction) {
+					case(0):
+						if(G.minotaurRow > 0){
+							G.minotaurRow--;
+						}
+						break;
+					case(1):
+						if(G.minotaurCol < boardWidth-1){
+							G.minotaurCol++;
+						}
+						break;
+					case(2):
+						if(G.minotaurRow < boardHeight-1){
+							G.minotaurRow++;
+						}
+						break;
+					case(3):
+						if(G.minotaurCol > 0){
+							G.minotaurCol--;
+						}
+						break;
+					default:
+						break;
+				}
+				
+				//If the minotaur was standing on the exit, rewrite the exit symbol.
+				if(G.minotaurPos === G.exitPos){
+					cells[G.exitPos].setDisplay(exitSym);
+				}
+
+				let tempPos = G.minotaurPos;
+
+				G.minotaurPos = G.minotaurRow * boardWidth + G.minotaurCol;
+
+				console.log("APP: Minotaur moved from " + tempPos + " to " + G.minotaurPos);
+
+				if(G.minotaurPos === G.theseusPos){
 					break;
-				case(1):
-					if(G.minotaurCol < boardWidth-1){
-						G.minotaurCol++;
-					}
-					break;
-				case(2):
-					if(G.minotaurRow < boardHeight-1){
-						G.minotaurRow++;
-					}
-					break;
-				case(3):
-					if(G.minotaurCol > 0){
-						G.minotaurCol--;
-					}
-					break;
-				default:
-					break;
+				}
 			}
-			
-			//If the minotaur was standing on the exit, rewrite the exit symbol.
-			if(G.minotaurPos === G.exitPos){
-				cells[G.exitPos].setDisplay(exitSym);
-			}
-			
-			G.minotaurPos = G.minotaurRow * boardWidth + G.minotaurCol;
-			cells[G.minotaurPos].setDisplay(minotaurSym);
+
 			return {...G,cells};
 		},
 		

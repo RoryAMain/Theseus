@@ -1,5 +1,5 @@
 import React from 'react';
-import {boardWidth,boardHeight} from './constants';
+import {boardWidth,boardHeight,minotaurSym} from './constants';
 import { newMaze } from './mazegenerator';
 
 export class TheseusBoard extends React.Component {
@@ -7,9 +7,12 @@ export class TheseusBoard extends React.Component {
 	//Launched by Theseus Controls, triggers Theseus move.
 	moveTheseusButton(id){
 		if(this.isTheseusTurn()){
-			if(!this.wallCheck(id)){
+			if(!this.wallCheck(this.props.G.theseusPos,id,1)){
 				this.props.G.cells[this.props.G.theseusPos].scent = id;
 				this.props.moves.moveTheseus(id);
+				if(!this.doesTheseusSeeMinotaur()){
+					this.props.G.cells[this.props.G.minotaurPos].setDisplay(null);
+				}
 				this.updateFogOfWar();
 				this.props.events.endTurn();
 			}
@@ -33,10 +36,15 @@ export class TheseusBoard extends React.Component {
 	}
 	
 	//Launched by Minotaur Controls, triggers 1 Minotaur move.
-	moveMinotaurButton(id){
+	moveMinotaurButton(id,distance){
 		if(!this.isTheseusTurn()){
-			if(!this.wallCheck(id)){
-				this.props.moves.moveMinotaur(id);
+			if(!this.wallCheck(this.props.G.minotaurPos,id,1)){
+				let tempPos = this.props.G.minotaurPos;
+				this.props.moves.moveMinotaur(id,distance);
+				console.log("moveMinotaurButton: Minotaur moved from " + tempPos + " to " + this.props.G.minotaurPos);
+				if(this.doesTheseusSeeMinotaur()){
+					this.props.G.cells[this.props.G.minotaurPos].setDisplay(minotaurSym);
+				}
 				this.props.events.endTurn();
 			}
 		}
@@ -80,63 +88,43 @@ export class TheseusBoard extends React.Component {
 		}
 	}
 	
-	wallCheck(id)
+	//Returns true if a wall is between a position and a cell distance cells away in a given direction.
+	wallCheck(position,direction,distance)
 	{
-		if(this.isTheseusTurn()){
-			switch(id){
-				case(0):
-					if(this.props.G.cells[this.props.G.theseusPos].walls[0] === 0){
-						return true;
-					}
-					break;
-				case(1):
-					if(this.props.G.cells[this.props.G.theseusPos].walls[1] === 0){
-						return true;
-					}
-					break;
-				case(2):
-					if(this.props.G.cells[this.props.G.theseusPos].walls[2] === 0){
-						return true;
-					}
-					break;
-				case(3):
-					if(this.props.G.cells[this.props.G.theseusPos].walls[3] === 0){
-						return true;
-					}
-					break;
-				default:
-					break;
+		let currentPosition = position;
+		for(let x=0;x<distance;x++){
+
+				switch(direction){
+					case(0):
+						if(this.props.G.cells[currentPosition].walls[0] === 0){
+							return true;
+						}
+						currentPosition = currentPosition - boardWidth;
+						break;
+					case(1):
+						if(this.props.G.cells[currentPosition].walls[1] === 0){
+							return true;
+						}
+						currentPosition = currentPosition + 1;
+						break;
+					case(2):
+						if(this.props.G.cells[currentPosition].walls[2] === 0){
+							return true;
+						}
+						currentPosition = currentPosition + boardWidth;
+						break;
+					case(3):
+						if(this.props.G.cells[currentPosition].walls[3] === 0){
+							return true;
+						}
+						currentPosition = currentPosition - 1;
+						break;
+					default:
+						break;
+				}
 			}
 			
-			return false;
-		}
-		
-		switch(id){
-				case(0):
-					if(this.props.G.cells[this.props.G.minotaurPos].walls[0] === 0){
-						return true;
-					}
-					break;
-				case(1):
-					if(this.props.G.cells[this.props.G.minotaurPos].walls[1] === 0){
-						return true;
-					}
-					break;
-				case(2):
-					if(this.props.G.cells[this.props.G.minotaurPos].walls[2] === 0){
-						return true;
-					}
-					break;
-				case(3):
-					if(this.props.G.cells[this.props.G.minotaurPos].walls[3] === 0){
-						return true;
-					}
-					break;
-				default:
-					break;
-			}
-			
-			return false;
+			return false;		
 	}
 	
 	getRandInt(minIn,maxIn){
@@ -278,20 +266,42 @@ export class TheseusBoard extends React.Component {
 		return false;
 	}
 
+	doesTheseusSeeMinotaur(){
+		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
+		for(let x = 0; x< theseusLOS.length; x++){
+			if(theseusLOS[x] === this.props.G.minotaurPos){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	//Takes 2 moves into the direction of id. If a wall is hit, turn off minotaur rage.
 	minotaurRage(direction){
 		if(!this.isTheseusTurn()){
-			if(!this.wallCheck(direction)){
-				//console.log("Rage: " + direction)
-				this.props.moves.moveMinotaur(direction);
-				if(!this.wallCheck(direction)){
-					this.props.moves.moveMinotaur(direction);
+			let distance = 0;
+			if(!this.wallCheck(this.props.G.minotaurPos,direction,1)){
+				distance = distance + 1;
+				//let tempPos = this.props.G.minotaurPos;
+				//this.props.moves.moveMinotaur(direction);
+				//console.log("minotaurRage First Move: Minotaur moved from " + tempPos + " to " + this.props.G.minotaurPos);
+
+				if(!this.wallCheck(this.props.G.minotaurPos,direction,2)){
+
+					distance = distance + 1;
+					//tempPos = this.props.G.minotaurPos;
+					//this.props.moves.moveMinotaur(direction);
+					//console.log("moveRage Second Move: Minotaur moved from " + tempPos + " to " + this.props.G.minotaurPos);
+
 				}
 				else{
 					this.props.G.minotaurRageTrigger = false;
 					this.props.G.minotaurRageDirection = -1;
 				}
-				this.props.events.endTurn();
+
+				this.moveMinotaurButton(direction,distance);
+
 			}
 			else{
 				this.props.G.minotaurRageTrigger = false;
@@ -368,7 +378,7 @@ export class TheseusBoard extends React.Component {
 				break;
 		}
 		for(let x=0;x<4;x++){
-			if(!this.wallCheck(x)){
+			if(!this.wallCheck(this.props.G.minotaurPos,x,1)){
 				possibleDirections.push(x);
 			}
 		}
@@ -549,15 +559,16 @@ export class TheseusBoard extends React.Component {
 			//If there's a scent.
 			else if(this.props.G.cells[this.props.G.minotaurPos].scent !== -1){
 			//	console.log("Following scent.");
-				this.moveMinotaurButton(this.props.G.cells[this.props.G.minotaurPos].scent);
+				this.moveMinotaurButton(this.props.G.cells[this.props.G.minotaurPos].scent,1);
 			}
 			//Otherwise wander.
 			else{
 				console.log("Wandering");
 				this.props.G.minotaurWanderDirection = this.chooseWanderDirection(this.props.G.minotaurWanderDirection);
-				this.moveMinotaurButton(this.props.G.minotaurWanderDirection);
+				this.moveMinotaurButton(this.props.G.minotaurWanderDirection,1);
 			}
 		}
+
 	}
 
 	componentWillUnmount(){
@@ -626,7 +637,7 @@ export class TheseusBoard extends React.Component {
 				else{
 					cells.push(
 					<td style={cellStyle} key={id} id={"Cell" + id}>
-						{<div style={{width:'100%', height:'100%' , overflow:'hidden'}}><img src={require('./' + this.props.G.cells[id].display)} lineHeight='0' alt='characterGraphic'></img></div>}
+						{<div style={{width:'100%', height:'100%' , overflow:'hidden'}}><img src={require('./' + this.props.G.cells[id].display)} alt='characterGraphic'></img></div>}
 					</td>
 					);
 
