@@ -1,16 +1,63 @@
-const boardWidth = 10
-const boardHeight = 10;
+class constantSetup{
+	
+	getRandInt(minIn,maxIn){
+			return Math.floor(Math.random() * (maxIn-minIn)) + minIn;
+	}
 
-const theseusStartingRow = 0;
-const theseusStartingCol = 0;
+	chooseRandomExit(){
+		//First choose which wall.
+		let whichWall = this.getRandInt(0,4);
+		let randRow = 0;
+		let randCol = 0;
+		console.log(whichWall);
+
+		switch(whichWall){
+			case(0):
+				randRow = 0;
+				randCol = this.getRandInt(0,boardWidth-1);
+				break;
+
+			case(1):
+				randCol = boardWidth-1;
+				randRow = this.getRandInt(0,boardHeight-1);
+				break;
+
+			case(2):
+				randRow = boardHeight-1;
+				randCol = this.getRandInt(0,boardWidth-1);
+
+				break;
+
+			case(3):
+				randCol = 0;
+				randRow = this.getRandInt(0,boardHeight-1);
+				break;
+		}
+
+		let exit = [randRow,randCol];
+		return exit;
+	}
+
+}
+
+let setup = new constantSetup();
+
+const boardWidth = 15;
+const boardHeight = 15;
+
+const theseusStartingRow = Math.round(boardWidth/2);
+const theseusStartingCol = Math.round(boardHeight/2);
 const theseusSym = 'warrior.svg';
 
-const minotaurStartingRow = boardHeight-1;
-const minotaurStartingCol = boardWidth-1;
+let minotaurStart = setup.chooseRandomExit();
+
+const minotaurStartingRow = minotaurStart[0];
+const minotaurStartingCol = minotaurStart[1];
 const minotaurSym = 'minotaur.svg';
 
-const exitRow = boardHeight-1;
-const exitCol = boardWidth-1;
+let exit = setup.chooseRandomExit();
+const exitRow = exit[0];
+const exitCol = exit[1];
 const exitSym = 'flag.svg';
 
 export{

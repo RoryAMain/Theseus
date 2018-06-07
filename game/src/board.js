@@ -1,5 +1,5 @@
 import React from 'react';
-import {boardWidth,boardHeight,minotaurSym} from './constants';
+import {boardWidth,boardHeight,minotaurSym,exitSym} from './constants';
 import { newMaze } from './mazegenerator';
 
 export class TheseusBoard extends React.Component {
@@ -14,6 +14,9 @@ export class TheseusBoard extends React.Component {
 					this.props.G.cells[this.props.G.minotaurPos].setDisplay(null);
 				}
 				this.updateFogOfWar();
+				if(this.doesTheseusSeeExit()){
+					this.props.G.cells[this.props.G.exitPos].setDisplay(exitSym)
+				}
 				this.props.events.endTurn();
 			}
 		}
@@ -270,6 +273,17 @@ export class TheseusBoard extends React.Component {
 		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
 		for(let x = 0; x< theseusLOS.length; x++){
 			if(theseusLOS[x] === this.props.G.minotaurPos){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	doesTheseusSeeExit(){
+		let theseusLOS = this.getLineOfSight(this.props.G.theseusPos);
+		for(let x = 0; x< theseusLOS.length; x++){
+			if(theseusLOS[x] === this.props.G.exitPos){
 				return true;
 			}
 		}
