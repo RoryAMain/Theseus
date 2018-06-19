@@ -15,7 +15,7 @@ export class TheseusBoard extends React.Component {
 				}
 				this.updateFogOfWar();
 				if(this.doesTheseusSeeExit()){
-					this.props.G.cells[this.props.G.exitPos].setDisplay(exitSym)
+					this.props.G.cells[this.props.G.exitPos].setDisplay(exitSym);
 				}
 				this.props.events.endTurn();
 			}
@@ -662,21 +662,34 @@ export class TheseusBoard extends React.Component {
 		
 		return(
 			<div>
-				<div>
-					<table style={{margin:'0 auto'}} id="board">
+				<div style={{backgroundColor:'#222'}}>
+					<table style={{margin:'0 auto' , backgroundColor:'white'}} id="board">
 						<tbody>{tbody}</tbody>
 					</table>
 				
-					<div>
+					<div style={{color:'white'}}>
 						{message}
 					</div>
-					<div>
+					<div style={{color:'red'}}>
 						{warning}
 					</div>
 				</div>
+
+				<div style={{color:'white',textAlign:'center'}}>
+					<br/>
+					<h2>Instructions:</h2>
+					<p>
+						Find the exit.
+						<br/>
+						Avoid the minotaur.
+						<br/>
+						Listen closely.
+					</p>
+
+				</div>
 				
-				<div>
-					<p style={{fontSize: '50%',textAlign:'center'}}>
+				<div style={{position:'fixed', bottom:'0', backgroundColor:'#00bc8c',width:'100%'}}>
+					<p style={{fontSize: '50%',textAlign:'center', color:'white'}}>
 					Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a>, <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a>, and <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank" rel="noopener noreferrer">CC 3.0 BY</a>
 					</p>
 				</div>

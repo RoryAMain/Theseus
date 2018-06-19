@@ -32,6 +32,10 @@ class constantSetup{
 				randCol = 0;
 				randRow = this.getRandInt(0,boardHeight-1);
 				break;
+			default:
+				randCol = 0;
+				randRow = this.getRandInt(0,boardHeight-1);
+				break;
 		}
 
 		let exit = [randRow,randCol];
@@ -42,8 +46,8 @@ class constantSetup{
 
 let setup = new constantSetup();
 
-const boardWidth = 15;
-const boardHeight = 15;
+const boardWidth = 10;
+const boardHeight = 10;
 
 const theseusStartingRow = Math.round(boardWidth/2);
 const theseusStartingCol = Math.round(boardHeight/2);
